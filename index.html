@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proof of Work Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="container">
+        <header class="page-header">
+            <h1>Proof of Work</h1>
+            <p>Track completed work, current activities, and future goals.</p>
+        </header>
+
+        <section class="form-card">
+            <h2 id="formTitle">Add Proof of Work</h2>
+
+            <form id="workForm">
+                <input type="hidden" id="editIndex" value="-1">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="done">What Was Done no meta</label>
+                        <textarea id="done" rows="4" placeholder="Enter completed work..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ongoing">What Is Going On</label>
+                        <textarea id="ongoing" rows="4" placeholder="Enter current work..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="future">What in Future</label>
+                        <textarea id="future" rows="4" placeholder="Enter future goal..."></textarea>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button type="submit" class="btn primary" id="submitBtn">Add Entry</button>
+                    <button type="button" class="btn success hidden" id="updateBtn">Update</button>
+                    <button type="button" class="btn secondary" id="clearBtn">Clear</button>
+                    <button type="button" class="btn save" id="saveBtn">Save</button>
+                </div>
+            </form>
+
+            <p id="statusMessage" class="status"></p>
+        </section>
+
+        <section class="table-card">
+            <div class="table-header">
+                <h2>My Proof of Work List</h2>
+                <span id="entryCount">0 entries</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date Created</th>
+                            <th>What Was Done no meta</th>
+                            <th>What Is Going On</th>
+                            <th>What in Future</th>
+                            <th>Actions</th>
+                        </tr>   
+                    </thead>
+                    <tbody id="workTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
