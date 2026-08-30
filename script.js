@@ -1,54 +1,6 @@
-const STORAGE_KEY = "proofOfWorkData";
 
-const defaultData = [
-    {
-        done: "Kubernetes & Docker",
-        ongoing: "Meta Software React",
-        future: "UPSC, MPSC"
-    },
-    {
-        done: "CICD",
-        ongoing: "Apna College projects",
-        future: "Category c government exam"
-    },
-    {
-        done: "kernel Linux",
-        ongoing: "Code writing React",
-        future: "MCA degree"
-    },
-    {
-        done: "Five software certificates",
-        ongoing: "Fundamentals of computer",
-        future: "To increase deadlift weight"
-    },
-    {
-        done: "PSI exam done 1st attempt",
-        ongoing: "Python pattern printing",
-        future: ""
-    },
-    {
-        done: "BCA completed successfully on own study",
-        ongoing: "React cheat sheet writing",
-        future: ""
-    },
-    {
-        done: "Gym 2 hours",
-        ongoing: "React syllabus writing",
-        future: ""
-    },
-    {
-        done: "Company setup pt. ltd.",
-        ongoing: "YouTube channel video creation & upload",
-        future: ""
-    },
-    {
-        done: "(Diet) 2 eggs, peanut butter, paneer, whey protein, oats",
-        ongoing: "",
-        future: ""
-    }
-];
 
-let workData = loadData();
+let workData =[];
 
 const workForm = document.getElementById("workForm");
 const doneInput = document.getElementById("done");
@@ -64,24 +16,9 @@ const entryCount = document.getElementById("entryCount");
 const statusMessage = document.getElementById("statusMessage");
 const formTitle = document.getElementById("formTitle");
 
-function loadData() {
-    const saved = localStorage.getItem(STORAGE_KEY);
 
-    if (saved) {
-        try {
-            return JSON.parse(saved);
-        } catch (error) {
-            console.error("Could not read saved data:", error);
-        }
-    }
 
-    return [...defaultData];
-}
 
-function saveToLocalStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(workData));
-    showStatus("Data saved successfully in your browser.");
-}
 
 function showStatus(message) {
     statusMessage.textContent = message;
@@ -91,6 +28,27 @@ function showStatus(message) {
         statusMessage.textContent = "";
     }, 3000);
 }
+
+
+async function loadWorkFromDatabase() {
+    try {
+        const response = await fetch("http://localhost:5000/api/work");
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch work entries");
+        }
+
+        workData = await response.json();
+
+        renderTable();
+
+        console.log("Work entries loaded from MongoDB.");
+    } catch (error) {
+        console.error("Failed to load work entries:", error);
+        showStatus("Failed to load entries from MongoDB.");
+    }
+}
+
 
 function renderTable() {
     tableBody.innerHTML = "";
@@ -142,44 +100,91 @@ function escapeHtml(text) {
         .replaceAll("'", "&#039;");
 }
 
-workForm.addEventListener("submit", function(event) {
+workForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const entry = {
-    date: new Date().toLocaleDateString("en-IN"),
-    done: doneInput.value.trim(),
-    ongoing: ongoingInput.value.trim(),
-    future: futureInput.value.trim()
-};
+        date: new Date().toLocaleDateString("en-IN"),
+        done: doneInput.value.trim(),
+        ongoing: ongoingInput.value.trim(),
+        future: futureInput.value.trim()
+    };
 
     if (!entry.done && !entry.ongoing && !entry.future) {
         showStatus("Please enter at least one value.");
         return;
     }
 
-    workData.push(entry);
-    renderTable();
-    clearForm();
-    showStatus("New entry added. Click Save to permanently store it.");
+    try {
+        const response = await fetch("http://localhost:5000/api/work", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(entry)
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to save entry");
+        }
+
+        const savedEntry = await response.json();
+
+        workData.push(savedEntry);
+        renderTable();
+        clearForm();
+
+        showStatus("Entry saved to MongoDB successfully!");
+    } catch (error) {
+        console.error(error);
+        showStatus("Failed to save entry.");
+    }
 });
 
-updateBtn.addEventListener("click", function() {
+updateBtn.addEventListener("click", async function() {
     const index = Number(editIndexInput.value);
 
     if (index < 0 || index >= workData.length) {
         return;
     }
 
-    workData[index] = {
-    date: workData[index].date || new Date().toLocaleDateString("en-IN"),
-    done: doneInput.value.trim(),
-    ongoing: ongoingInput.value.trim(),
-    future: futureInput.value.trim()
-};
+    const item = workData[index];
 
-    renderTable();
-    clearForm();
-    showStatus("Entry updated. Click Save to store the latest version.");
+    const updatedEntry = {
+        date: item.date || new Date().toLocaleDateString("en-IN"),
+        done: doneInput.value.trim(),
+        ongoing: ongoingInput.value.trim(),
+        future: futureInput.value.trim()
+    };
+
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/work/${item._id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedEntry)
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to update entry");
+        }
+
+        const savedEntry = await response.json();
+
+        workData[index] = savedEntry;
+
+        renderTable();
+        clearForm();
+        showStatus("Entry updated successfully in MongoDB!");
+
+    } catch (error) {
+        console.error(error);
+        showStatus("Failed to update entry.");
+    }
 });
 
 function editEntry(index) {
@@ -200,7 +205,7 @@ function editEntry(index) {
     });
 }
 
-function removeEntry(index) {
+async function removeEntry(index) {
     const item = workData[index];
 
     const confirmed = confirm(
@@ -211,10 +216,163 @@ function removeEntry(index) {
         return;
     }
 
-    workData.splice(index, 1);
-    renderTable();
-    showStatus("Entry removed. Click Save to store the change.");
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/work/${item._id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to delete entry");
+        }
+
+        workData.splice(index, 1);
+
+        renderTable();
+
+        showStatus("Entry removed successfully from MongoDB!");
+
+    } catch (error) {
+        console.error(error);
+        showStatus("Failed to remove entry.");
+    }
 }
+async function loadTasks() {
+    try {
+        const response = await fetch("http://localhost:5000/api/tasks");
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch tasks");
+        }
+
+        const tasks = await response.json();
+
+        console.log("Tasks loaded:", tasks);
+        const activeTasks = tasks.filter(
+        task => task.status !== "completed"
+        );
+        renderTasks(activeTasks);
+        checkScheduledTasks(tasks);
+
+
+    } catch (error) {
+        console.error("Failed to load tasks:", error);
+    }
+}
+
+
+
+function renderTasks(tasks) {
+    const taskList = document.getElementById("taskList");
+
+    taskList.innerHTML = "";
+
+    if (tasks.length === 0) {
+        taskList.innerHTML = "<p>No pending tasks for today.</p>";
+        return;
+    }
+
+    tasks.forEach((task, index) => {
+        const taskItem = document.createElement("div");
+
+        taskItem.className =
+            index === 0 ? "task-item next-task" : "task-item";
+
+        taskItem.innerHTML = `
+            ${index === 0 ? "<strong>🔔 NEXT TASK</strong>" : ""}
+
+            <h3>${escapeHtml(task.title)}</h3>
+
+            <p>Status: ${task.status}</p>
+            <p>Priority: ${task.priority}</p>
+            <p>Time: ${task.scheduledTime || "Not scheduled"}</p>
+
+            <div>
+                <button onclick="completeTask('${task._id}')">
+                    Complete
+                </button>
+
+                <button onclick="snoozeTask('${task._id}')">
+                    Snooze 10 min
+                </button>
+            </div>
+        `;
+
+        taskList.appendChild(taskItem);
+    });
+}
+
+
+async function completeTask(taskId) {
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/tasks/${taskId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    status: "completed",
+                    completedAt: new Date().toISOString()
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to complete task");
+        }
+
+        const updatedTask = await response.json();
+
+        console.log("Task completed:", updatedTask);
+
+        loadTasks();
+
+    } catch (error) {
+        console.error("Failed to complete task:", error);
+    }
+}
+async function snoozeTask(taskId) {
+    try {
+        const newTime = new Date(Date.now() + 10 * 60 * 1000);
+
+        const scheduledDate = newTime.toLocaleDateString("en-IN");
+        const scheduledTime = newTime.toTimeString().slice(0, 5);
+
+        const response = await fetch(
+            `http://localhost:5000/api/tasks/${taskId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    scheduledDate: scheduledDate,
+                    scheduledTime: scheduledTime,
+                    status: "snoozed",
+                    notifiedAt: null
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to snooze task");
+        }
+
+        const updatedTask = await response.json();
+
+        console.log("Task snoozed:", updatedTask);
+
+        loadTasks();
+
+    } catch (error) {
+        console.error("Failed to snooze task:", error);
+    }
+}
+
 
 function clearForm() {
     workForm.reset();
@@ -227,8 +385,118 @@ function clearForm() {
 
 clearBtn.addEventListener("click", clearForm);
 
-saveBtn.addEventListener("click", function() {
-    saveToLocalStorage();
-});
+async function requestNotificationPermission() {
+    if (!("Notification" in window)) {
+        console.log("This browser does not support notifications.");
+        return;
+    }
 
-renderTable();
+    if (Notification.permission === "default") {
+        const permission = await Notification.requestPermission();
+
+        console.log("Notification permission:", permission);
+    } else {
+        console.log("Notification permission:", Notification.permission);
+    }
+}
+
+requestNotificationPermission();
+function testNotification() {
+    if (Notification.permission === "granted") {
+        new Notification("Proof of Work", {
+            body: "This is your task reminder test."
+        });
+    } else {
+        console.log("Notification permission not granted.");
+    }
+
+}
+
+function sendTaskNotification(task) {
+    if (Notification.permission !== "granted") {
+        return;
+    }
+
+    new Notification("🔔 Proof of Work — Task Reminder", {
+        body: `It's time for: ${task.title}`,
+        requireInteraction: true
+    });
+}
+async function checkScheduledTasks(tasks) {
+    const now = new Date();
+
+    const today = now.toLocaleDateString("en-IN");
+    const currentTime = now.toTimeString().slice(0, 5);
+
+    for (const task of tasks) {
+        if (
+            task.status === "completed" ||
+            task.scheduledDate !== today ||
+            !task.scheduledTime ||
+            task.scheduledTime !== currentTime ||
+            task.notifiedAt
+        ) {
+            continue;
+        }
+
+        sendTaskNotification(task);
+
+        try {
+            await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    notifiedAt: new Date().toISOString()
+                })
+            });
+        } catch (error) {
+            console.error("Failed to save notification status:", error);
+        }
+    }
+}
+
+function checkScheduledTasks(tasks) {
+    const now = new Date();
+
+    const today = now.toLocaleDateString("en-IN");
+    const currentTime = now.toTimeString().slice(0, 5);
+
+    tasks.forEach((task) => {
+        if (
+            task.status === "completed" ||
+            task.scheduledDate !== today ||
+            !task.scheduledTime
+        ) {
+            return;
+        }
+
+        if (task.scheduledTime === currentTime) {
+            sendTaskNotification(task);
+        }
+    });
+}
+
+loadWorkFromDatabase();
+loadTasks();
+setInterval(() => {
+    loadTasks();
+}, 60000);
+setInterval(async () => {
+    try {
+        const response = await fetch("http://localhost:5000/api/tasks");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const tasks = await response.json();
+
+        checkScheduledTasks(tasks);
+
+    } catch (error) {
+        console.error("Scheduler error:", error);
+    }
+}, 60000);
+
