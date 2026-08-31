@@ -32,7 +32,7 @@ function showStatus(message) {
 
 async function loadWorkFromDatabase() {
     try {
-        const response = await fetch("http://localhost:5000/api/work");
+        const response = await fetch("https://backend-gray-three-83.vercel.app/api/work");
 
         if (!response.ok) {
             throw new Error("Failed to fetch work entries");
@@ -116,7 +116,7 @@ workForm.addEventListener("submit", async function(event) {
     }
 
     try {
-        const response = await fetch("http://localhost:5000/api/work", {
+        const response = await fetch("https://backend-gray-three-83.vercel.app/api/work", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -159,7 +159,7 @@ updateBtn.addEventListener("click", async function() {
 
     try {
         const response = await fetch(
-            `http://localhost:5000/api/work/${item._id}`,
+            `https://backend-gray-three-83.vercel.app/api/work/${item._id}`,
             {
                 method: "PUT",
                 headers: {
@@ -218,7 +218,7 @@ async function removeEntry(index) {
 
     try {
         const response = await fetch(
-            `http://localhost:5000/api/work/${item._id}`,
+            `https://backend-gray-three-83.vercel.app/api/work/${item._id}`,
             {
                 method: "DELETE"
             }
@@ -241,7 +241,7 @@ async function removeEntry(index) {
 }
 async function loadTasks() {
     try {
-        const response = await fetch("http://localhost:5000/api/tasks");
+        const response = await fetch("https://backend-gray-three-83.vercel.app/api/tasks");
 
         if (!response.ok) {
             throw new Error("Failed to fetch tasks");
@@ -308,7 +308,7 @@ function renderTasks(tasks) {
 async function completeTask(taskId) {
     try {
         const response = await fetch(
-            `http://localhost:5000/api/tasks/${taskId}`,
+            `https://backend-gray-three-83.vercel.app/api/tasks/${taskId}`,
             {
                 method: "PUT",
                 headers: {
@@ -343,7 +343,7 @@ async function snoozeTask(taskId) {
         const scheduledTime = newTime.toTimeString().slice(0, 5);
 
         const response = await fetch(
-            `http://localhost:5000/api/tasks/${taskId}`,
+            `https://backend-gray-three-83.vercel.app/api/tasks/${taskId}`,
             {
                 method: "PUT",
                 headers: {
@@ -442,7 +442,7 @@ async function checkScheduledTasks(tasks) {
         sendTaskNotification(task);
 
         try {
-            await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+            await fetch(`https://backend-gray-three-83.vercel.app/api/tasks/${task._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -485,7 +485,7 @@ setInterval(() => {
 }, 60000);
 setInterval(async () => {
     try {
-        const response = await fetch("http://localhost:5000/api/tasks");
+        const response = await fetch("https://backend-gray-three-83.vercel.app/api/tasks");
 
         if (!response.ok) {
             return;
