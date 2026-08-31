@@ -14,15 +14,21 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log("MongoDB connected successfully!");
-    })
-    .catch((error) => {
-        console.error("MongoDB connection failed:", error.message);
-    });
 
+async function connectDB() {
+    try {
+        if (mongoose.connection.readyState === 1) {
+            return;
+        }
+
+        await mongoose.connect(process.env.MONGO_URI);
+
+        console.log("MongoDB connected successfully!");
+    } catch (error) {
+        console.error("MongoDB connection failed:", error.message);
+        throw error;
+    }
+}
 // Test route
 app.get("/", (req, res) => {
     res.send("Proof of Work Backend is running!");
@@ -151,6 +157,7 @@ app.delete("/api/work/:id", async (req, res) => {
 
 app.get("/api/work", async (req, res) => {
     try {
+        await connectDB();
         const works = await Work.find().sort({ order: 1 });
 
         res.status(200).json(works);
@@ -165,6 +172,7 @@ app.get("/api/work", async (req, res) => {
 
 app.get("/api/tasks", async (req, res) => {
     try {
+        await connectDB();
         const tasks = await Task.find().sort({ order: 1 });
 
         res.status(200).json(tasks);
