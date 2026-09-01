@@ -478,6 +478,55 @@ function checkScheduledTasks(tasks) {
     });
 }
 
+
+document.getElementById("addTaskBtn").addEventListener("click", async () => {
+    const title = document.getElementById("taskTitle").value.trim();
+    const scheduledDate = document.getElementById("taskDate").value;
+    const scheduledTime = document.getElementById("taskTime").value;
+    const priority = document.getElementById("taskPriority").value;
+
+    if (!title || !scheduledDate || !scheduledTime) {
+        alert("Please fill all task details.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "https://backend-gray-three-83.vercel.app/api/tasks",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: title,
+                    status: "pending",
+                    priority: priority,
+                    scheduledDate: scheduledDate,
+                    scheduledTime: scheduledTime
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to create task");
+        }
+
+        const task = await response.json();
+
+        console.log("Task created:", task);
+
+        document.getElementById("taskTitle").value = "";
+        document.getElementById("taskDate").value = "";
+        document.getElementById("taskTime").value = "";
+
+        await loadTasks();
+
+    } catch (error) {
+        console.error("Error creating task:", error);
+        alert("Failed to create task.");
+    }
+});
 loadWorkFromDatabase();
 loadTasks();
 setInterval(() => {

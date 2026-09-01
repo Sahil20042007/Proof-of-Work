@@ -72,6 +72,39 @@
         </section>
 
         <section class="task-section">
+
+            <div class="task-form">
+    <h3>Add New Task</h3>
+
+    <input
+        type="text"
+        id="taskTitle"
+        placeholder="Task title"
+        required
+    >
+
+    <input
+        type="date"
+        id="taskDate"
+        required
+    >
+
+    <input
+        type="time"
+        id="taskTime"
+        required
+    >
+
+    <select id="taskPriority">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+    </select>
+
+    <button type="button" id="addTaskBtn">
+        Add Task
+    </button>
+</div>          
             <h2>Today's Tasks</h2>
 
             <div id="taskList"></div>
