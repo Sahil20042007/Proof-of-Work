@@ -14,6 +14,7 @@ const saveBtn = document.getElementById("saveBtn");
 const tableBody = document.getElementById("workTableBody");
 const entryCount = document.getElementById("entryCount");
 const statusMessage = document.getElementById("statusMessage");
+const workDateInput = document.getElementById("workDate");
 const formTitle = document.getElementById("formTitle");
 
 
@@ -103,17 +104,21 @@ function escapeHtml(text) {
 workForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const entry = {
-        date: new Date().toLocaleDateString("en-IN"),
-        done: doneInput.value.trim(),
-        ongoing: ongoingInput.value.trim(),
-        future: futureInput.value.trim()
-    };
+    const selectedDate = workDateInput.value;
 
-    if (!entry.done && !entry.ongoing && !entry.future) {
-        showStatus("Please enter at least one value.");
-        return;
-    }
+        const entry = {
+            date: selectedDate
+                ? new Date(selectedDate + "T00:00:00").toLocaleDateString("en-IN")
+                : new Date().toLocaleDateString("en-IN"),
+
+            done: doneInput.value.trim(),
+            ongoing: ongoingInput.value.trim(),
+            future: futureInput.value.trim()
+        };
+            if (!entry.done && !entry.ongoing && !entry.future) {
+                showStatus("Please enter at least one value.");
+                return;
+            }
 
     try {
         const response = await fetch("https://backend-gray-three-83.vercel.app/api/work", {
@@ -374,8 +379,24 @@ async function snoozeTask(taskId) {
 }
 
 
+function getTodayDate() {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+workDateInput.value = getTodayDate();
+
+
 function clearForm() {
     workForm.reset();
+
+    workDateInput.value = getTodayDate();
+
     editIndexInput.value = -1;
 
     formTitle.textContent = "Add Proof of Work";
@@ -549,3 +570,18 @@ setInterval(async () => {
     }
 }, 60000);
 
+const workDateInput = document.getElementById("workDate");
+
+function getTodayDate() {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+if (workDateInput) {
+    workDateInput.value = getTodayDate();
+}
