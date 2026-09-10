@@ -92,47 +92,171 @@ function renderTable() {
                 </td>
             </tr>
         `;
+
+        entryCount.textContent = "0 entries";
+        return;
     }
 
-    // Create one table row for every entry.
+    // Group entries by month.
+    const monthlyEntries = {};
+
     workData.forEach((item, index) => {
-        const row = document.createElement("tr");
+        if (!item.date) return;
 
-        row.innerHTML = `
-            <td class="number-cell">${index + 1}</td>
+        const [day, month, year] = item.date.split("/");
 
-            <td>${item.date || "—"}</td>
+        const monthKey = `${year}-${month}`;
 
-            <td>${formatText(item.done)}</td>
+        if (!monthlyEntries[monthKey]) {
+            monthlyEntries[monthKey] = [];
+        }
 
-            <td>${formatText(item.ongoing)}</td>
+        monthlyEntries[monthKey].push({
+            item,
+            index
+        });
+    });
 
-            <td>${formatText(item.future)}</td>
+    // Sort months from newest to oldest.
+    const sortedMonths = Object.keys(monthlyEntries).sort(
+        (a, b) => b.localeCompare(a)
+    );
 
-            <td class="action-cell">
-                <button
-                    class="edit-btn"
-                    onclick="editEntry(${index})"
-                >
-                    Edit
-                </button>
+    // Current month.
+    const today = new Date();
 
-                <button
-                    class="remove-btn"
-                    onclick="removeEntry(${index})"
-                >
-                    Remove
-                </button>
-            </td>
+    const currentMonthKey =
+        `${today.getFullYear()}-${String(
+            today.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    // Create one collapsible section for every month.
+    sortedMonths.forEach((monthKey) => {
+
+        const [year, month] = monthKey.split("-");
+
+        const monthName = new Date(
+            Number(year),
+            Number(month) - 1
+        ).toLocaleString("en-IN", {
+            month: "long",
+            year: "numeric"
+        });
+
+        // Create collapsible month container.
+        const monthDetails = document.createElement("details");
+
+        // Current month is open.
+        // Older months are closed.
+        monthDetails.open =
+            monthKey === currentMonthKey;
+
+        // Month heading.
+        const summary = document.createElement("summary");
+
+        summary.innerHTML = `
+            <span class="month-title">
+                ${monthName}
+            </span>
+
+            <span class="month-count">
+                ${monthlyEntries[monthKey].length}
+                ${
+                    monthlyEntries[monthKey].length === 1
+                        ? "entry"
+                        : "entries"
+                }
+            </span>
         `;
 
-        tableBody.appendChild(row);
+        monthDetails.appendChild(summary);
+
+        // Container for this month's entries.
+        const monthTable = document.createElement("table");
+
+        monthTable.className = "month-entry-table";
+
+        monthTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>What Was Done</th>
+                    <th>What Is Going On</th>
+                    <th>What in Future</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        `;
+
+        const monthTableBody =
+            monthTable.querySelector("tbody");
+
+        // Add entries belonging to this month.
+        monthlyEntries[monthKey].forEach(
+            ({ item, index }) => {
+
+                const row =
+                    document.createElement("tr");
+
+                row.innerHTML = `
+                    <td class="number-cell">
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${item.date || "—"}
+                    </td>
+
+                    <td>
+                        ${formatText(item.done)}
+                    </td>
+
+                    <td>
+                        ${formatText(item.ongoing)}
+                    </td>
+
+                    <td>
+                        ${formatText(item.future)}
+                    </td>
+
+                    <td class="action-cell">
+
+                        <button
+                            class="edit-btn"
+                            onclick="editEntry(${index})"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="remove-btn"
+                            onclick="removeEntry(${index})"
+                        >
+                            Remove
+                        </button>
+
+                    </td>
+                `;
+
+                monthTableBody.appendChild(row);
+            }
+        );
+
+        monthDetails.appendChild(monthTable);
+
+        // Add the month section to the main table container.
+        tableBody.appendChild(monthDetails);
     });
 
     // Update total entry count.
     entryCount.textContent =
         `${workData.length} ${
-            workData.length === 1 ? "entry" : "entries"
+            workData.length === 1
+                ? "entry"
+                : "entries"
         }`;
 }
 
@@ -863,7 +987,25 @@ document
             );
         }
     });
+// ============================================================
+// DARK MODE
+// ============================================================
 
+            const darkModeBtn =
+                document.getElementById("darkModeBtn");
+
+            darkModeBtn.addEventListener("click", () => {
+
+                document.body.classList.toggle("dark-mode");
+
+                const darkModeEnabled =
+                    document.body.classList.contains("dark-mode");
+
+                darkModeBtn.textContent =
+                    darkModeEnabled
+                        ? "☀️ Light Mode"
+                        : "🌙 Dark Mode";
+            }); 
 
 // ============================================================
 // APPLICATION STARTUP

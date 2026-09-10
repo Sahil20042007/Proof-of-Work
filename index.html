@@ -12,6 +12,16 @@
         <header class="page-header">
             <h1>Proof of Work</h1>
             <p>Track completed work, current activities, and future goals.</p>
+
+            <div class="display-controls">
+
+                <button type="button" id="darkModeBtn">
+                    🌙 Dark Mode
+                </button>
+
+                
+
+            </div>
         </header>
 
         <section class="form-card">
@@ -54,27 +64,15 @@
         </section>
 
         <section class="table-card">
-            <div class="table-header">
-                <h2>My Proof of Work List</h2>
-                <span id="entryCount">0 entries</span>
-            </div>
+                <div class="table-header">
+                    <h2>My Proof of Work List</h2>
+                    <span id="entryCount">0 entries</span>
+                </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Date Created</th>
-                            <th>What Was Done no meta</th>
-                            <th>What Is Going On</th>
-                            <th>What in Future</th>
-                            <th>Actions</th>
-                        </tr>   
-                    </thead>
-                    <tbody id="workTableBody"></tbody>
-                </table>
-            </div>
-        </section>
+                <div class="table-wrapper">
+                    <div id="workTableBody"></div>
+                </div>
+</section>
 
         <section class="task-section">
 

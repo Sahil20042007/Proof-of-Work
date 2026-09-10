@@ -366,3 +366,313 @@ tbody tr:hover {
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
+
+/* ============================================================
+   MONTH-WISE ENTRY SECTIONS
+   ============================================================ */
+
+/* Main collapsible month container */
+#workTableBody details {
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+
+/* Month header */
+#workTableBody summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 20px;
+
+    cursor: pointer;
+    user-select: none;
+
+    background: #f8fafc;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    list-style: none;
+}
+
+
+/* Remove default browser arrow */
+#workTableBody summary::-webkit-details-marker {
+    display: none;
+}
+
+
+/* Custom arrow */
+#workTableBody summary::before {
+    content: "▶";
+
+    margin-right: 12px;
+
+    font-size: 12px;
+
+    transition: transform 0.2s ease;
+}
+
+
+/* Rotate arrow when month is open */
+#workTableBody details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+
+/* Month title */
+.month-title {
+    flex: 1;
+}
+
+
+/* Number of entries in month */
+.month-count {
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #e5e7eb;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    color: #374151;
+}
+
+
+/* Hover effect */
+#workTableBody summary:hover {
+    background: #f1f5f9;
+}
+
+
+/* Entry table inside month */
+.month-entry-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+/* Table header */
+.month-entry-table thead {
+    background: #f8fafc;
+}
+
+
+.month-entry-table th {
+    padding: 12px;
+
+    text-align: left;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #475569;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+/* Table cells */
+.month-entry-table td {
+    padding: 14px 12px;
+
+    vertical-align: top;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    font-size: 14px;
+}
+
+
+/* Remove border from last entry */
+.month-entry-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* Entry hover */
+.month-entry-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+
+/* Month opening animation */
+#workTableBody details > .month-entry-table {
+    animation: monthOpen 0.2s ease;
+}
+
+
+@keyframes monthOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ============================================================
+   DISPLAY CONTROLS
+   ============================================================ */
+
+.display-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.display-controls button {
+    padding: 9px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #1f2937;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.display-controls button:hover {
+    background: #f3f4f6;
+}
+
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+body.dark-mode {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+
+/* Cards */
+body.dark-mode .form-card,
+body.dark-mode .table-card {
+    background: #1f2937;
+    color: #f3f4f6;
+
+    border-color: #374151;
+}
+
+
+/* Headings */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+    color: #f9fafb;
+}
+
+
+/* Inputs */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background: #111827;
+    color: #f3f4f6;
+
+    border-color: #4b5563;
+}
+
+
+/* Input placeholders */
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #9ca3af;
+}
+
+
+/* Table */
+body.dark-mode .month-entry-table {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+body.dark-mode .month-entry-table th {
+    background: #374151;
+    color: #f9fafb;
+}
+
+/* Dark mode entry rows */
+body.dark-mode .month-entry-table tbody tr {
+    background: #1f2937;
+}
+
+body.dark-mode .month-entry-table tbody tr td {
+    background: #1f2937;
+    border-color: #374151;
+    color: #e5e7eb;
+}
+
+/* Very subtle hover */
+body.dark-mode .month-entry-table tbody tr:hover,
+body.dark-mode .month-entry-table tbody tr:hover td {
+    background: #263449;
+}
+
+/* Month headers */
+body.dark-mode #workTableBody details {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+body.dark-mode #workTableBody summary {
+    background: #273449;
+    color: #f9fafb;
+}
+
+body.dark-mode #workTableBody summary:hover {
+    background: #374151;
+}
+
+
+/* Entry count */
+body.dark-mode .month-count {
+    background: #4b5563;
+    color: #f9fafb;
+}
+
+
+/* Display buttons */
+body.dark-mode .display-controls button {
+    background: #1f2937;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+body.dark-mode .display-controls button:hover {
+    background: #374151;
+}
+
+
+/* ============================================================
+   PROOF OF WORK ENTRY READABILITY
+   ============================================================ */
+
+.month-entry-table th {
+    font-size: 15px;
+}
+
+.month-entry-table td {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Date and entry number */
+.month-entry-table .number-cell,
+.month-entry-table td:nth-child(2) {
+    font-size: 15px;
+}
