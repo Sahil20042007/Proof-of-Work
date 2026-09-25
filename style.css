@@ -767,3 +767,355 @@ body.dark-mode .week-count {
 body.dark-mode .month-heading {
     color: #f9fafb;
 }
+
+
+
+/* ============================================================
+   ENVIRONMENTAL COLOR THEME
+   ============================================================ */
+
+:root {
+    --eco-green: #16a34a;
+    --eco-dark-green: #15803d;
+    --eco-light-green: #dcfce7;
+
+    --eco-blue: #0284c7;
+    --eco-light-blue: #e0f2fe;
+
+    --eco-teal: #0d9488;
+    --eco-light-teal: #ccfbf1;
+
+    --eco-yellow: #eab308;
+    --eco-light-yellow: #fef9c3;
+
+    --eco-orange: #f97316;
+    --eco-light-orange: #ffedd5;
+
+    --eco-purple: #8b5cf6;
+    --eco-light-purple: #ede9fe;
+
+    --eco-earth: #92400e;
+
+    --eco-background: #f0fdf4;
+    --eco-card: #ffffff;
+    --eco-text: #17251b;
+}
+
+
+/* ============================================================
+   PAGE BACKGROUND
+   ============================================================ */
+
+body {
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(34, 197, 94, 0.12),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(14, 165, 233, 0.12),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(234, 179, 8, 0.10),
+            transparent 30%
+        ),
+        var(--eco-background);
+
+    color: var(--eco-text);
+}
+
+
+/* ============================================================
+   MAIN HEADINGS
+   ============================================================ */
+
+h1 {
+    color: var(--eco-dark-green);
+}
+
+h2 {
+    color: var(--eco-green);
+}
+
+h3 {
+    color: var(--eco-teal);
+}
+
+
+/* ============================================================
+   FORM CARD
+   ============================================================ */
+
+.form-card {
+    border-top: 5px solid var(--eco-green);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f0fdf4 100%
+        );
+
+    box-shadow:
+        0 8px 25px rgba(22, 163, 74, 0.10);
+}
+
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+
+input,
+textarea,
+select {
+    border: 2px solid #bbf7d0;
+    background: #ffffff;
+    transition: 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--eco-green);
+
+    box-shadow:
+        0 0 0 4px rgba(34, 197, 94, 0.12);
+
+    outline: none;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn.primary {
+    background: linear-gradient(
+        135deg,
+        #16a34a,
+        #059669
+    );
+}
+
+.btn.primary:hover {
+    background: linear-gradient(
+        135deg,
+        #15803d,
+        #047857
+    );
+}
+
+.btn.success {
+    background: linear-gradient(
+        135deg,
+        #0d9488,
+        #0284c7
+    );
+}
+
+.btn.secondary {
+    background: linear-gradient(
+        135deg,
+        #64748b,
+        #475569
+    );
+}
+
+
+/* ============================================================
+   TABLE CARD
+   ============================================================ */
+
+.table-card {
+    border-top: 5px solid var(--eco-blue);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f0fdfa
+        );
+
+    box-shadow:
+        0 8px 25px rgba(2, 132, 199, 0.10);
+}
+
+
+/* ============================================================
+   MONTH HEADINGS
+   ============================================================ */
+
+.month-heading {
+    color: #166534;
+
+    border-left: 6px solid var(--eco-green);
+
+    padding-left: 12px;
+}
+
+
+/* ============================================================
+   WEEK SECTIONS
+   ============================================================ */
+
+.week-details {
+    border: 2px solid #bae6fd;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 4px 12px rgba(14, 165, 233, 0.08);
+
+    transition: 0.2s ease;
+}
+
+.week-details summary {
+    background:
+        linear-gradient(
+            90deg,
+            #ecfdf5,
+            #f0fdfa,
+            #eff6ff
+        );
+
+    color: #14532d;
+}
+
+.week-details summary:hover {
+    background:
+        linear-gradient(
+            90deg,
+            #dcfce7,
+            #ccfbf1,
+            #dbeafe
+        );
+}
+
+.week-count {
+    background: var(--eco-light-green);
+    color: var(--eco-dark-green);
+}
+
+
+/* ============================================================
+   TABLE HEADER
+   ============================================================ */
+
+.month-entry-table th {
+    background:
+        linear-gradient(
+            135deg,
+            #166534,
+            #0f766e,
+            #0369a1
+        );
+
+    color: white;
+}
+
+
+/* ============================================================
+   TABLE ROWS
+   ============================================================ */
+
+.month-entry-table tbody tr {
+    background: #ffffff;
+}
+
+.month-entry-table tbody tr:nth-child(even) {
+    background: #f0fdf4;
+}
+
+.month-entry-table tbody tr:hover {
+    background: #dff7ea;
+}
+
+
+/* ============================================================
+   DATE COLUMN
+   ============================================================ */
+
+.month-entry-table td:nth-child(2) {
+    color: #0369a1;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   ACTION BUTTONS
+   ============================================================ */
+
+.edit-btn {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+}
+
+.edit-btn:hover {
+    background: #bae6fd;
+}
+
+.remove-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.remove-btn:hover {
+    background: #fecaca;
+}
+
+
+/* ============================================================
+   ENTRY COUNT
+   ============================================================ */
+
+#entryCount {
+    background: var(--eco-light-green);
+    color: var(--eco-dark-green);
+
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   STATUS MESSAGE
+   ============================================================ */
+
+.status {
+    color: var(--eco-teal);
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   DISPLAY CONTROLS
+   ============================================================ */
+
+.display-controls button {
+    border: 2px solid #86efac;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0fdf4,
+            #ecfeff
+        );
+
+    color: #166534;
+
+    font-weight: 700;
+}
+
+.display-controls button:hover {
+    background: #dcfce7;
+}
+
+
