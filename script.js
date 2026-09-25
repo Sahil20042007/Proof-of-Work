@@ -82,22 +82,22 @@ async function loadWorkFromDatabase() {
 function renderTable() {
     tableBody.innerHTML = "";
 
-    // Show empty state when there are no entries.
     if (workData.length === 0) {
         tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="empty-row">
-                    No proof-of-work entries yet.
-                    Add your first entry above.
-                </td>
-            </tr>
+            <div class="empty-row">
+                No proof-of-work entries yet.
+                Add your first entry above.
+            </div>
         `;
 
         entryCount.textContent = "0 entries";
         return;
     }
 
-    // Group entries by month.
+    // ============================================================
+    // GROUP ENTRIES BY MONTH
+    // ============================================================
+
     const monthlyEntries = {};
 
     workData.forEach((item, index) => {
@@ -117,22 +117,29 @@ function renderTable() {
         });
     });
 
-    // Sort months from newest to oldest.
+    // Newest month first
     const sortedMonths = Object.keys(monthlyEntries).sort(
         (a, b) => b.localeCompare(a)
     );
 
-    // Current month.
+    // ============================================================
+    // CURRENT DATE
+    // ============================================================
+
     const today = new Date();
 
+    const currentYear = today.getFullYear();
+    const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
+    const currentDay = today.getDate();
+
     const currentMonthKey =
-        `${today.getFullYear()}-${String(
-            today.getMonth() + 1
-        ).padStart(2, "0")}`;
+        `${currentYear}-${currentMonth}`;
 
-    // Create one collapsible section for every month.
+    // ============================================================
+    // CREATE MONTHS
+    // ============================================================
+
     sortedMonths.forEach((monthKey) => {
-
         const [year, month] = monthKey.split("-");
 
         const monthName = new Date(
@@ -143,115 +150,260 @@ function renderTable() {
             year: "numeric"
         });
 
-        // Create collapsible month container.
-        const monthDetails = document.createElement("details");
+        // Month heading
+        const monthSection = document.createElement("div");
 
-        // Current month is open.
-        // Older months are closed.
-        monthDetails.open =
-            monthKey === currentMonthKey;
+        monthSection.className = "month-section";
 
-        // Month heading.
-        const summary = document.createElement("summary");
-
-        summary.innerHTML = `
-            <span class="month-title">
+        monthSection.innerHTML = `
+            <h3 class="month-heading">
                 ${monthName}
-            </span>
-
-            <span class="month-count">
-                ${monthlyEntries[monthKey].length}
-                ${
-                    monthlyEntries[monthKey].length === 1
-                        ? "entry"
-                        : "entries"
-                }
-            </span>
+            </h3>
         `;
 
-        monthDetails.appendChild(summary);
+        tableBody.appendChild(monthSection);
 
-        // Container for this month's entries.
-        const monthTable = document.createElement("table");
+        // ========================================================
+        // GROUP THIS MONTH'S ENTRIES BY WEEK
+        // ========================================================
 
-        monthTable.className = "month-entry-table";
+        const weeklyEntries = {};
 
-        monthTable.innerHTML = `
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>What Was Done</th>
-                    <th>What Is Going On</th>
-                    <th>What in Future</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+        monthlyEntries[monthKey].forEach(({ item, index }) => {
+            const [day, monthNumber, yearNumber] =
+                item.date.split("/");
 
-            <tbody></tbody>
-        `;
+            const date = new Date(
+                Number(yearNumber),
+                Number(monthNumber) - 1,
+                Number(day)
+            );
 
-        const monthTableBody =
-            monthTable.querySelector("tbody");
+            // Monday = start of week
+            const dayOfWeek = date.getDay();
 
-        // Add entries belonging to this month.
-        monthlyEntries[monthKey].forEach(
-            ({ item, index }) => {
+            const difference =
+                dayOfWeek === 0
+                    ? -6
+                    : 1 - dayOfWeek;
 
-                const row =
-                    document.createElement("tr");
+            const weekStart = new Date(date);
 
-                row.innerHTML = `
-                    <td class="number-cell">
-                        ${index + 1}
-                    </td>
+            weekStart.setDate(
+                date.getDate() + difference
+            );
 
-                    <td>
-                        ${item.date || "—"}
-                    </td>
+            const weekStartKey =
+                `${weekStart.getFullYear()}-${String(
+                    weekStart.getMonth() + 1
+                ).padStart(2, "0")}-${String(
+                    weekStart.getDate()
+                ).padStart(2, "0")}`;
 
-                    <td>
-                        ${formatText(item.done)}
-                    </td>
-
-                    <td>
-                        ${formatText(item.ongoing)}
-                    </td>
-
-                    <td>
-                        ${formatText(item.future)}
-                    </td>
-
-                    <td class="action-cell">
-
-                        <button
-                            class="edit-btn"
-                            onclick="editEntry(${index})"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            class="remove-btn"
-                            onclick="removeEntry(${index})"
-                        >
-                            Remove
-                        </button>
-
-                    </td>
-                `;
-
-                monthTableBody.appendChild(row);
+            if (!weeklyEntries[weekStartKey]) {
+                weeklyEntries[weekStartKey] = [];
             }
+
+            weeklyEntries[weekStartKey].push({
+                item,
+                index
+            });
+        });
+
+        // Newest week first
+        const sortedWeeks = Object.keys(weeklyEntries).sort(
+            (a, b) => b.localeCompare(a)
         );
 
-        monthDetails.appendChild(monthTable);
+        // ========================================================
+        // CREATE WEEK SECTIONS
+        // ========================================================
 
-        // Add the month section to the main table container.
-        tableBody.appendChild(monthDetails);
+        sortedWeeks.forEach((weekStartKey) => {
+            const [weekYear, weekMonth, weekDay] =
+                weekStartKey.split("-");
+
+            const weekStart = new Date(
+                Number(weekYear),
+                Number(weekMonth) - 1,
+                Number(weekDay)
+            );
+
+            const weekEnd = new Date(weekStart);
+
+            weekEnd.setDate(
+                weekStart.getDate() + 6
+            );
+
+            const weekStartText =
+                weekStart.toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short"
+                });
+
+            const weekEndText =
+                weekEnd.toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short"
+                });
+
+            // ====================================================
+            // CHECK WHETHER THIS IS CURRENT WEEK
+            // ====================================================
+
+            const todayDate = new Date(
+                currentYear,
+                today.getMonth(),
+                currentDay
+            );
+
+            const currentDayOfWeek =
+                todayDate.getDay();
+
+            const currentDifference =
+                currentDayOfWeek === 0
+                    ? -6
+                    : 1 - currentDayOfWeek;
+
+            const currentWeekStart =
+                new Date(todayDate);
+
+            currentWeekStart.setDate(
+                todayDate.getDate() +
+                currentDifference
+            );
+
+            const currentWeekKey =
+                `${currentWeekStart.getFullYear()}-${String(
+                    currentWeekStart.getMonth() + 1
+                ).padStart(2, "0")}-${String(
+                    currentWeekStart.getDate()
+                ).padStart(2, "0")}`;
+
+            // ====================================================
+            // DETAILS / COLLAPSE
+            // ====================================================
+
+            const weekDetails =
+                document.createElement("details");
+
+            weekDetails.className =
+                "week-details";
+
+            // Only current week opens automatically
+            weekDetails.open =
+                weekStartKey === currentWeekKey;
+
+            // ====================================================
+            // WEEK SUMMARY
+            // ====================================================
+
+            const summary =
+                document.createElement("summary");
+
+            summary.innerHTML = `
+                <span class="week-title">
+                    ${weekStartText} – ${weekEndText}
+                </span>
+
+                <span class="week-count">
+                    ${weeklyEntries[weekStartKey].length}
+                    ${
+                        weeklyEntries[weekStartKey].length === 1
+                            ? "entry"
+                            : "entries"
+                    }
+                </span>
+            `;
+
+            weekDetails.appendChild(summary);
+
+            // ====================================================
+            // WEEK TABLE
+            // ====================================================
+
+            const weekTable =
+                document.createElement("table");
+
+            weekTable.className =
+                "month-entry-table";
+
+            weekTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>What Was Done</th>
+                        <th>What Is Going On</th>
+                        <th>What in Future</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            `;
+
+            const weekTableBody =
+                weekTable.querySelector("tbody");
+
+            weeklyEntries[weekStartKey].forEach(
+                ({ item, index }) => {
+
+                    const row =
+                        document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td class="number-cell">
+                            ${index + 1}
+                        </td>
+
+                        <td>
+                            ${item.date || "—"}
+                        </td>
+
+                        <td>
+                            ${formatText(item.done)}
+                        </td>
+
+                        <td>
+                            ${formatText(item.ongoing)}
+                        </td>
+
+                        <td>
+                            ${formatText(item.future)}
+                        </td>
+
+                        <td class="action-cell">
+                            <button
+                                class="edit-btn"
+                                onclick="editEntry(${index})"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="remove-btn"
+                                onclick="removeEntry(${index})"
+                            >
+                                Remove
+                            </button>
+                        </td>
+                    `;
+
+                    weekTableBody.appendChild(row);
+                }
+            );
+
+            weekDetails.appendChild(weekTable);
+
+            tableBody.appendChild(weekDetails);
+        });
     });
 
-    // Update total entry count.
+    // ============================================================
+    // TOTAL ENTRY COUNT
+    // ============================================================
+
     entryCount.textContent =
         `${workData.length} ${
             workData.length === 1

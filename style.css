@@ -676,3 +676,94 @@ body.dark-mode .display-controls button:hover {
 .month-entry-table td:nth-child(2) {
     font-size: 15px;
 }
+
+
+
+
+/* ============================================================
+   WEEKLY COLLAPSE
+   ============================================================ */
+
+.month-heading {
+    margin: 24px 0 10px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.week-details {
+    margin-bottom: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.week-details summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    background: #f8fafc;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    list-style: none;
+}
+
+.week-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.week-details summary::before {
+    content: "▶";
+    margin-right: 10px;
+    font-size: 11px;
+}
+
+.week-details[open] summary::before {
+    content: "▼";
+}
+
+.week-title {
+    flex: 1;
+}
+
+.week-count {
+    font-size: 13px;
+    padding: 4px 9px;
+    border-radius: 12px;
+    background: #e5e7eb;
+}
+
+.week-details .month-entry-table {
+    margin: 0;
+}
+
+
+/* ============================================================
+   WEEKLY COLLAPSE — DARK MODE
+   ============================================================ */
+
+body.dark-mode .week-details {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+body.dark-mode .week-details summary {
+    background: #273449;
+    color: #f9fafb;
+}
+
+body.dark-mode .week-details summary:hover {
+    background: #374151;
+}
+
+body.dark-mode .week-count {
+    background: #4b5563;
+    color: #f9fafb;
+}
+
+body.dark-mode .month-heading {
+    color: #f9fafb;
+}
